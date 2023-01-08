@@ -1,0 +1,18 @@
+USE [Test]
+GO
+create proc [dbo].[Goster] --create procedure with name--
+as 
+select ID as SiraNo, 
+replace(replace(IslemTur,'0','Giris'),'1','Cikis') as IslemTur, --when IslemTur equals to 0 replace with Giris, when Islem Tur equals to 1 replace with Cikis--
+EvrakNo,
+CONVERT(VARCHAR(15), CAST(STI.Tarih - 2 AS datetime), 23) as Tarih, --convert Tarih int to date format yyyy-mm-dd --
+CASE IslemTur
+            WHEN 0 Then STI.Miktar --when IslemTur equals to 0(Giris), GirisMiktar equals to Miktar from STI -- 
+			WHEN 1 Then 0          --when IslemTur equals to 1(Cikis), CikisMiktar equals 0 --
+       END AS GirisMiktar,
+CASE IslemTur
+            WHEN 1 Then STI.Miktar  --when IslemTur equals to 1(Cikis), CikisMiktar equals to Miktar from STI -- 
+			WHEN 0 Then 0           --when IslemTur equals to 0(Giris), GirisMiktar equals 0 --
+       END AS CikisMiktar
+from STI 
+order by ID,Tarih  --order list by ascending id--
